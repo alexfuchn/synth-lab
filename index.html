@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYNTH LAB — Waveform Synthesizer</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Header -->
+  <header class="header">
+    <h1 class="title">SYNTH<span class="accent">_</span>LAB</h1>
+    <span class="subtitle">WAVEFORM SYNTHESIZER v1.0</span>
+    <div class="mode-tabs">
+      <button class="mode-tab active" data-mode="function">FUNCTION</button>
+      <button class="mode-tab" data-mode="combo">WAVE_MIX</button>
+    </div>
+  </header>
+
+  <main class="main-area">
+
+    <!-- Circular Waveform Display -->
+    <div class="ring-container">
+      <canvas id="ringCanvas" class="ring-canvas"></canvas>
+      <div class="ring-center">
+        <div class="freq-display" id="freqDisplay">440 Hz</div>
+        <div class="vol-display" id="volDisplay">-6 dB</div>
+        <div class="peak-dot" id="peakDot"></div>
+      </div>
+      <div class="ring-glow" id="ringGlow"></div>
+    </div>
+
+    <!-- Scrolling Oscilloscope -->
+    <div class="scope-container">
+      <canvas id="scopeCanvas" class="scope-canvas"></canvas>
+      <div class="scope-grid">
+        <div class="grid-line" style="top:25%"></div>
+        <div class="grid-line" style="top:50%"></div>
+        <div class="grid-line" style="top:75%"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Controls -->
+  <section class="controls">
+
+    <!-- Mode 1: Function Input -->
+    <div class="control-panel active" id="panelFunction">
+      <div class="input-row">
+        <label class="input-label">f(x) =</label>
+        <input type="text" class="function-input" id="functionInput"
+               value="sin(440*2*PI*x)" spellcheck="false" autocomplete="off">
+        <button class="btn-icon" id="btnBookmark" title="Bookmark (Ctrl+B)">&#9733;</button>
+        <button class="btn-icon" id="btnUndo" title="Undo (Ctrl+Z)">&#8630;</button>
+        <button class="btn-icon" id="btnRedo" title="Redo (Ctrl+Y)">&#8631;</button>
+        <button class="btn-apply" id="btnApply">APPLY</button>
+      </div>
+      <div class="math-keyboard" id="mathKeyboard">
+        <button class="math-key">sin</button>
+        <button class="math-key">cos</button>
+        <button class="math-key">tan</button>
+        <button class="math-key">tanh</button>
+        <button class="math-key">ln</button>
+        <button class="math-key">log</button>
+        <button class="math-key">exp</button>
+        <button class="math-key">sqrt</button>
+        <button class="math-key">abs</button>
+        <button class="math-key">^</button>
+        <button class="math-key">x</button>
+        <button class="math-key">PI</button>
+        <button class="math-key">E</button>
+        <button class="math-key">(</button>
+        <button class="math-key">)</button>
+        <button class="math-key">+</button>
+        <button class="math-key">-</button>
+        <button class="math-key">*</button>
+        <button class="math-key">/</button>
+        <button class="math-key">%</button>
+      </div>
+      <div class="preset-row">
+        <span class="preset-label">PRESETS:</span>
+        <button class="preset-btn" data-expr="sin(440*2*PI*x)">Pure 440Hz</button>
+        <button class="preset-btn" data-expr="sin(440*2*PI*x)+0.3*sin(880*2*PI*x)">Overtone</button>
+        <button class="preset-btn" data-expr="exp(-3*x)*sin(440*2*PI*x)">Decay</button>
+        <button class="preset-btn" data-expr="sin(220*2*PI*x+sin(5*2*PI*x))">FM Synth</button>
+        <button class="preset-btn" data-expr="sin(440*2*PI*x)*sin(0.5*2*PI*x)">Tremolo</button>
+        <button class="preset-btn" data-expr="sin(440*2*PI*x)*(1-2*(x%0.5>0.25))">Gated</button>
+      </div>
+      <div class="fav-section" id="favSection">
+        <div class="fav-header">
+          <span class="fav-label">FAVORITES</span>
+          <span class="fav-count" id="favCount">0</span>
+        </div>
+        <div class="fav-list" id="favList">
+          <span class="fav-empty">No bookmarked functions yet</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mode 2: Wave Combination -->
+    <div class="control-panel" id="panelCombo">
+      <div class="wave-grid">
+        <!-- Sine -->
+        <div class="wave-card" data-wave="0">
+          <div class="wave-card-header">
+            <span class="wave-dot wave-dot-sine"></span>
+            <span class="wave-name">SINE</span>
+            <span class="wave-icon">∿</span>
+          </div>
+          <div class="slider-group">
+            <label>Amp</label>
+            <div class="slider-row">
+              <input type="range" class="slider slider-sine" id="amp0" min="0" max="1" step="0.01" value="0.5">
+              <input type="number" class="num-input" id="amp0Num" min="0" max="1" step="0.01" value="0.5">
+            </div>
+          </div>
+          <div class="slider-group">
+            <label>Freq</label>
+            <div class="slider-row">
+              <input type="range" class="slider slider-sine" id="freq0" min="20" max="2000" step="1" value="220">
+              <input type="number" class="num-input" id="freq0Num" min="20" max="2000" step="1" value="220">
+            </div>
+          </div>
+          <div class="slider-group">
+            <label>Phase</label>
+            <div class="slider-row">
+              <input type="range" class="slider slider-sine" id="phase0" min="0" max="6.28" step="0.01" value="0">
+              <input type="number" class="num-input" id="phase0Num" min="0" max="6.28" step="0.01" value="0">
+            </div>
+          </div>
+        </div>
+
+        <!-- Triangle -->
+        <div class="wave-card" data-wave="1">
+          <div class="wave-card-header">
+            <span class="wave-dot wave-dot-tri"></span>
+            <span class="wave-name">TRI</span>
+            <span class="wave-icon">⋀</span>
+          </div>
+          <div class="slider-group">
+            <label>Amp</label>
+            <div class="slider-row">
+              <input type="range" class="slider slider-tri" id="amp1" min="0" max="1" step="0.01" value="0">
+              <input type="number" class="num-input" id="amp1Num" min="0" max="1" step="0.01" value="0">
+            </div>
+          </div>
+          <div class="slider-group">
+            <label>Freq</label>
+            <div class="slider-row">
+              <input type="range" class="slider slider-tri" id="freq1" min="20" max="2000" step="1" value="330">
+              <input type="number" class="num-input" id="freq1Num" min="20" max="2000" step="1" value="330">
+            </div>
+          </div>
+          <div class="slider-group">
+            <label>Phase</label>
+            <div class="slider-row">
+              <input type="range" class="slider slider-tri" id="phase1" min="0" max="6.28" step="0.01" value="0">
+              <input type="number" class="num-input" id="phase1Num" min="0" max="6.28" step="0.01" value="0">
+            </div>
+          </div>
+        </div>
+
+        <!-- Sawtooth -->
+        <div class="wave-card" data-wave="2">
+          <div class="wave-card-header">
+            <span class="wave-dot wave-dot-saw"></span>
+            <span class="wave-name">SAW</span>
+            <span class="wave-icon">⋌</span>
+          </div>
+          <div class="slider-group">
+            <label>Amp</label>
+            <div class="slider-row">
+              <input type="range" class="slider slider-saw" id="amp2" min="0" max="1" step="0.01" value="0">
+              <input type="number" class="num-input" id="amp2Num" min="0" max="1" step="0.01" value="0">
+            </div>
+          </div>
+          <div class="slider-group">
+            <label>Freq</label>
+            <div class="slider-row">
+              <input type="range" class="slider slider-saw" id="freq2" min="20" max="2000" step="1" value="440">
+              <input type="number" class="num-input" id="freq2Num" min="20" max="2000" step="1" value="440">
+            </div>
+          </div>
+          <div class="slider-group">
+            <label>Phase</label>
+            <div class="slider-row">
+              <input type="range" class="slider slider-saw" id="phase2" min="0" max="6.28" step="0.01" value="0">
+              <input type="number" class="num-input" id="phase2Num" min="0" max="6.28" step="0.01" value="0">
+            </div>
+          </div>
+        </div>
+
+        <!-- Square -->
+        <div class="wave-card" data-wave="3">
+          <div class="wave-card-header">
+            <span class="wave-dot wave-dot-sqr"></span>
+            <span class="wave-name">SQUARE</span>
+            <span class="wave-icon">⊓</span>
+          </div>
+          <div class="slider-group">
+            <label>Amp</label>
+            <div class="slider-row">
+              <input type="range" class="slider slider-sqr" id="amp3" min="0" max="1" step="0.01" value="0">
+              <input type="number" class="num-input" id="amp3Num" min="0" max="1" step="0.01" value="0">
+            </div>
+          </div>
+          <div class="slider-group">
+            <label>Freq</label>
+            <div class="slider-row">
+              <input type="range" class="slider slider-sqr" id="freq3" min="20" max="2000" step="1" value="550">
+              <input type="number" class="num-input" id="freq3Num" min="20" max="2000" step="1" value="550">
+            </div>
+          </div>
+          <div class="slider-group">
+            <label>Phase</label>
+            <div class="slider-row">
+              <input type="range" class="slider slider-sqr" id="phase3" min="0" max="6.28" step="0.01" value="0">
+              <input type="number" class="num-input" id="phase3Num" min="0" max="6.28" step="0.01" value="0">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- K multipliers -->
+      <div class="k-row">
+        <span class="k-label">MIX: k₁·SIN + k₂·TRI + k₃·SAW + k₄·SQR</span>
+        <div class="k-sliders">
+          <div class="k-group">
+            <label>k₁</label>
+            <div class="slider-row">
+              <input type="range" class="slider slider-sine" id="k0" min="0" max="3" step="0.01" value="1">
+              <input type="number" class="num-input" id="k0Num" min="0" max="3" step="0.01" value="1">
+            </div>
+          </div>
+          <div class="k-group">
+            <label>k₂</label>
+            <div class="slider-row">
+              <input type="range" class="slider slider-tri" id="k1" min="0" max="3" step="0.01" value="0">
+              <input type="number" class="num-input" id="k1Num" min="0" max="3" step="0.01" value="0">
+            </div>
+          </div>
+          <div class="k-group">
+            <label>k₃</label>
+            <div class="slider-row">
+              <input type="range" class="slider slider-saw" id="k2" min="0" max="3" step="0.01" value="0">
+              <input type="number" class="num-input" id="k2Num" min="0" max="3" step="0.01" value="0">
+            </div>
+          </div>
+          <div class="k-group">
+            <label>k₄</label>
+            <div class="slider-row">
+              <input type="range" class="slider slider-sqr" id="k3" min="0" max="3" step="0.01" value="0">
+              <input type="number" class="num-input" id="k3Num" min="0" max="3" step="0.01" value="0">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Master Controls -->
+    <div class="master-bar">
+      <button class="play-btn" id="playBtn">
+        <span class="play-icon">▶</span>
+        <span class="play-text">PLAY</span>
+      </button>
+      <div class="master-slider">
+        <label>VOL</label>
+        <input type="range" class="slider slider-vol" id="masterVolume" min="0" max="1" step="0.01" value="0.5">
+        <span class="vol-pct" id="volPct">50%</span>
+      </div>
+      <div class="clip-indicator" id="clipIndicator">CLIP</div>
+      <div class="mode-indicator" id="modeIndicator">MODE: FUNCTION</div>
+    </div>
+
+  </section>
+
+</div>
+
+<!-- Error Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
