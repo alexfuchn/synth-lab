@@ -1,0 +1,44 @@
+{
+  "name": "synth-lab",
+  "version": "1.0.0",
+  "description": "A browser-based waveform synthesizer that turns math expressions into sound in real time. Run with: npx synth-lab",
+  "bin": {
+    "synth-lab": "bin/cli.js"
+  },
+  "scripts": {
+    "start": "node bin/cli.js"
+  },
+  "files": [
+    "bin/",
+    "index.html",
+    "styles.css",
+    "script.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "synthesizer",
+    "web-audio",
+    "waveform",
+    "oscilloscope",
+    "sound",
+    "audio",
+    "music",
+    "math",
+    "function",
+    "cli"
+  ],
+  "author": "alexfuchn",
+  "license": "MIT",
+  "homepage": "https://alexfuchn.github.io/synth-lab/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexfuchn/synth-lab.git"
+  },
+  "bugs": {
+    "url": "https://github.com/alexfuchn/synth-lab/issues"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
