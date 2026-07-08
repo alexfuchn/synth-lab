@@ -1,8 +1,15 @@
-# SYNTH\_LAB
+# SYNTH_LAB
 
-A browser-based waveform synthesizer that turns **math expressions into sound** in real time.
+> A browser-based waveform synthesizer that turns **math expressions into sound** in real time.
 
-[Live Demo](#) (add your GitHub Pages / Vercel link here)
+<p align="center">
+  <a href="https://alexfuchn.github.io/synth-lab/"><img src="https://img.shields.io/badge/demo-live-00E5FF?style=flat-square" alt="Live Demo"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License: MIT"></a>
+  <img src="https://img.shields.io/badge/dependencies-none-brightgreen?style=flat-square" alt="Zero Dependencies">
+  <img src="https://img.shields.io/badge/PRs-welcome-ff4081?style=flat-square" alt="PRs Welcome">
+</p>
+
+**[View Live Demo →](https://alexfuchn.github.io/synth-lab/)**
 
 ---
 
@@ -81,7 +88,7 @@ Try these in **FUNCTION mode**:
 Clone and open — no build step, no package manager:
 
 ```bash
-git clone https://github.com/your-username/synth-lab.git
+git clone https://github.com/alexfuchn/synth-lab.git
 cd synth-lab
 open index.html   # or double-click in file explorer
 ```
@@ -102,4 +109,4 @@ Any modern browser with Web Audio API support: Chrome, Firefox, Edge, Safari.
 
 ## License
 
-MIT
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
